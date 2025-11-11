@@ -1,0 +1,37 @@
+name: Build DMG
+
+on:
+  push:
+    branches: [ work ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v1
+        with:
+          swift-version: "5.10"
+
+      - name: Build DMG
+        run: |
+          chmod +x Scripts/package_dmg.sh
+          Scripts/package_dmg.sh
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FreeSpaceMonitor-dmg
+          path: dist/FreeSpaceMonitor.dmg
+          if-no-files-found: error
+
+      - name: Upload zipped app bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: FreeSpaceMonitor-app-bundle
+          path: dist/FreeSpaceMonitor.app
+          if-no-files-found: error
